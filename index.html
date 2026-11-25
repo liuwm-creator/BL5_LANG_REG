@@ -1,0 +1,1616 @@
+<!DOCTYPE html>
+<html lang="zh-Hant">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>標點符號大冒險 - 小學生語文學習樂園</title>
+    <!-- 引入 Tailwind CSS -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <!-- 引入 Google Fonts 圓體字型，讓標點符號與繁體字更清晰可愛 -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+TC:wght@400;500;700;900&family=Zen+Maru+Gothic:wght@500;700;900&display=swap" rel="stylesheet">
+    
+    <style>
+        /* 自訂童趣風格樣式與動畫 */
+        :root {
+            --bg-cream: #FFFDF7;
+            --primary-yellow: #FFD166;
+            --primary-orange: #F77F00;
+            --primary-green: #06D6A0;
+            --primary-blue: #118AB2;
+            --primary-pink: #EF476F;
+            --text-dark: #2B2D42;
+        }
+
+        body {
+            font-family: 'Zen Maru Gothic', 'Noto Sans TC', sans-serif;
+            background-color: var(--bg-cream);
+            background-image: 
+                radial-gradient(#FFE8A3 2px, transparent 2px),
+                radial-gradient(#D8F3DC 2px, #FFFDF7 2px);
+            background-size: 40px 40px;
+            background-position: 0 0, 20px 20px;
+            color: var(--text-dark);
+            user-select: none;
+            -webkit-tap-highlight-color: transparent;
+            overflow-x: hidden;
+        }
+
+        /* 立體遊戲按鈕效果 */
+        .btn-3d {
+            transition: all 0.12s cubic-bezier(0.34, 1.56, 0.64, 1);
+            box-shadow: 0 6px 0 rgba(0, 0, 0, 0.18);
+            position: relative;
+            top: 0;
+        }
+        .btn-3d:hover:not(:disabled) {
+            transform: translateY(-2px);
+            box-shadow: 0 8px 0 rgba(0, 0, 0, 0.18);
+        }
+        .btn-3d:active:not(:disabled) {
+            top: 4px;
+            box-shadow: 0 2px 0 rgba(0, 0, 0, 0.18);
+        }
+        .btn-3d:disabled {
+            opacity: 0.55;
+            cursor: not-allowed;
+        }
+
+        /* 專屬標點按鈕 */
+        .punct-btn {
+            font-family: 'Noto Sans TC', sans-serif;
+            box-shadow: 0 5px 0 #CBD5E1;
+            transition: all 0.15s ease;
+        }
+        .punct-btn:hover {
+            transform: translateY(-3px) scale(1.04);
+            box-shadow: 0 8px 0 #94A3B8;
+        }
+        .punct-btn:active {
+            transform: translateY(3px);
+            box-shadow: 0 2px 0 #94A3B8;
+        }
+
+        /* 浮動與彈跳動畫 */
+        @keyframes float {
+            0%, 100% { transform: translateY(0px) rotate(0deg); }
+            50% { transform: translateY(-8px) rotate(2deg); }
+        }
+        .animate-float {
+            animation: float 3.2s ease-in-out infinite;
+        }
+
+        @keyframes popIn {
+            0% { transform: scale(0.7); opacity: 0; }
+            70% { transform: scale(1.06); opacity: 1; }
+            100% { transform: scale(1); opacity: 1; }
+        }
+        .animate-pop {
+            animation: popIn 0.35s cubic-bezier(0.34, 1.56, 0.64, 1) forwards;
+        }
+
+        @keyframes shake {
+            0%, 100% { transform: translateX(0); }
+            20%, 60% { transform: translateX(-8px); }
+            40%, 80% { transform: translateX(8px); }
+        }
+        .animate-shake {
+            animation: shake 0.4s ease-in-out;
+        }
+
+        /* 填空框樣式 */
+        .blank-slot {
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            min-width: 3.2rem;
+            height: 2.8rem;
+            padding: 0 0.5rem;
+            margin: 0 0.25rem;
+            border-radius: 0.85rem;
+            border: 3px dashed #3B82F6;
+            background-color: #EFF6FF;
+            color: #1D4ED8;
+            font-weight: 900;
+            vertical-align: middle;
+            transition: all 0.2s ease;
+            cursor: pointer;
+        }
+        .blank-slot.filled {
+            border-style: solid;
+            border-color: #F59E0B;
+            background-color: #FEF3C7;
+            color: #B45309;
+            transform: scale(1.05);
+        }
+        .blank-slot.correct {
+            border-color: #10B981;
+            background-color: #D1FAE5;
+            color: #047857;
+        }
+        .blank-slot.wrong {
+            border-color: #EF4444;
+            background-color: #FEE2E2;
+            color: #B91C1C;
+        }
+
+        /* 標點小醫生：句子中可點擊的標點 */
+        .doctor-punct {
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            min-width: 2.5rem;
+            height: 2.6rem;
+            margin: 0 0.15rem;
+            padding: 0 0.35rem;
+            border-radius: 0.75rem;
+            background-color: #FFFBEB;
+            border: 2px solid #FCD34D;
+            color: #D97706;
+            font-weight: 900;
+            cursor: pointer;
+            transition: all 0.2s;
+        }
+        .doctor-punct:hover {
+            background-color: #FEF3C7;
+            transform: scale(1.1);
+            border-color: #F59E0B;
+        }
+        .doctor-punct.selected {
+            background-color: #FEE2E2;
+            border-color: #EF4444;
+            color: #DC2626;
+            box-shadow: 0 0 0 4px rgba(239, 68, 68, 0.25);
+            transform: scale(1.12);
+        }
+
+        /* 捲軸美化 */
+        ::-webkit-scrollbar {
+            width: 8px;
+        }
+        ::-webkit-scrollbar-track {
+            background: #FEF3C7;
+            border-radius: 10px;
+        }
+        ::-webkit-scrollbar-thumb {
+            background: #F59E0B;
+            border-radius: 10px;
+        }
+    </style>
+</head>
+<body class="min-h-screen flex flex-col">
+
+    <!-- 頂部導覽列 -->
+    <header class="bg-white/90 backdrop-blur-md border-b-4 border-amber-300 sticky top-0 z-40 shadow-sm">
+        <div class="max-w-5xl mx-auto px-4 py-3 flex items-center justify-between">
+            <!-- Logo / 返回首頁 -->
+            <button onclick="switchScreen('home')" class="flex items-center gap-2.5 group text-left focus:outline-none">
+                <div class="w-11 h-11 rounded-2xl bg-gradient-to-br from-amber-400 to-orange-500 flex items-center justify-center text-white text-2xl font-black shadow-md group-hover:rotate-6 transition-transform">
+                    ？！
+                </div>
+                <div>
+                    <h1 class="text-xl sm:text-2xl font-black text-amber-600 tracking-wide">標點符號大冒險</h1>
+                    <p class="text-xs text-slate-500 font-bold hidden sm:block">快樂學語文・標點小精靈樂園</p>
+                </div>
+            </button>
+
+            <!-- 右側功能按鈕：星星總數 + 音效開關 + 回首頁 -->
+            <div class="flex items-center gap-2 sm:gap-3">
+                <!-- 累積星星徽章 -->
+                <div class="flex items-center gap-1.5 bg-amber-100 border-2 border-amber-300 px-3 py-1.5 rounded-full">
+                    <span class="text-lg">⭐</span>
+                    <span id="total-stars-display" class="font-black text-amber-700 text-sm sm:text-base">0</span>
+                </div>
+
+                <!-- 音效開關 -->
+                <button id="sound-toggle-btn" onclick="toggleSound()" title="開啟或關閉音效"
+                    class="w-10 h-10 rounded-full bg-sky-100 hover:bg-sky-200 border-2 border-sky-300 flex items-center justify-center text-sky-700 text-lg transition-colors">
+                    🔊
+                </button>
+
+                <!-- 回首頁按鈕 (非首頁時顯示) -->
+                <button id="nav-home-btn" onclick="switchScreen('home')"
+                    class="hidden px-3 py-1.5 sm:px-4 sm:py-2 rounded-full bg-rose-100 hover:bg-rose-200 border-2 border-rose-300 text-rose-700 font-bold text-sm transition-colors flex items-center gap-1">
+                    <span>🏠</span><span class="hidden sm:inline">主選單</span>
+                </button>
+            </div>
+        </div>
+    </header>
+
+    <!-- 主要內容區 -->
+    <main class="flex-grow max-w-5xl w-full mx-auto px-4 py-6 sm:py-8 flex flex-col justify-center">
+
+        <!-- ==================== 1. 首頁主選單 ==================== -->
+        <section id="screen-home" class="animate-pop">
+            <!-- 歡迎橫幅 -->
+            <div class="bg-gradient-to-r from-amber-300 via-yellow-200 to-lime-200 rounded-3xl p-6 sm:p-8 border-4 border-white shadow-xl mb-8 relative overflow-hidden">
+                <div class="flex flex-col md:flex-row items-center justify-between gap-6 relative z-10">
+                    <div class="text-center md:text-left space-y-3 max-w-xl">
+                        <span class="inline-block bg-white/90 text-orange-600 font-black px-4 py-1 rounded-full text-sm shadow-sm">
+                            ✨ 小學中國語文互動樂園 ✨
+                        </span>
+                        <h2 class="text-3xl sm:text-4xl font-black text-slate-800 leading-tight">
+                            歡迎來到<span class="text-orange-600">標點精靈島</span>！
+                        </h2>
+                        <p class="text-slate-700 text-base sm:text-lg font-medium leading-relaxed">
+                            句子就像一列小火車，標點符號就是控制速度和方向的交通燈！快來認識 10 位標點精靈，挑戰闖關成為「標點小博士」吧！
+                        </p>
+                    </div>
+                    <!-- 可愛標點精靈插畫 (SVG) -->
+                    <div class="animate-float flex-shrink-0">
+                        <svg width="160" height="140" viewBox="0 0 180 150" fill="none" xmlns="http://www.w3.org/2000/svg">
+                            <!-- 書本底座 -->
+                            <rect x="20" y="95" width="140" height="35" rx="12" fill="#FF9F1C" stroke="#FFFFFF" stroke-width="4"/>
+                            <rect x="30" y="90" width="120" height="25" rx="8" fill="#FFFDF7"/>
+                            <!-- 問號精靈 -->
+                            <circle cx="65" cy="58" r="32" fill="#38BDF8" stroke="#FFFFFF" stroke-width="4"/>
+                            <circle cx="55" cy="52" r="4" fill="#1E293B"/>
+                            <circle cx="75" cy="52" r="4" fill="#1E293B"/>
+                            <path d="M58 64 Q65 72 72 64" stroke="#1E293B" stroke-width="3.5" stroke-linecap="round"/>
+                            <text x="53" y="32" fill="#0284C7" font-size="26" font-weight="900">？</text>
+                            <!-- 感嘆號精靈 -->
+                            <circle cx="118" cy="62" r="30" fill="#FB7185" stroke="#FFFFFF" stroke-width="4"/>
+                            <circle cx="109" cy="56" r="4" fill="#1E293B"/>
+                            <circle cx="127" cy="56" r="4" fill="#1E293B"/>
+                            <path d="M111 67 Q118 75 125 67" stroke="#1E293B" stroke-width="3.5" stroke-linecap="round"/>
+                            <text x="108" y="34" fill="#E11D48" font-size="26" font-weight="900">！</text>
+                        </svg>
+                    </div>
+                </div>
+            </div>
+
+            <!-- 三大模式卡片 -->
+            <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
+                <!-- 模式一：標點小百科 -->
+                <button onclick="switchScreen('wiki')"
+                    class="btn-3d bg-white rounded-3xl p-6 border-4 border-sky-300 text-left flex flex-col justify-between group hover:bg-sky-50">
+                    <div>
+                        <div class="w-16 h-16 rounded-2xl bg-sky-100 text-sky-600 flex items-center justify-center text-4xl mb-4 group-hover:scale-110 transition-transform">
+                            📖
+                        </div>
+                        <span class="inline-block bg-sky-100 text-sky-700 text-xs font-black px-3 py-1 rounded-full mb-2">
+                            第一步：認識精靈
+                        </span>
+                        <h3 class="text-2xl font-black text-slate-800 mb-2">標點小百科</h3>
+                        <p class="text-slate-600 text-sm sm:text-base leading-relaxed">
+                            用朗朗上口的可愛口訣和生活例句，輕鬆學會 10 種常用標點符號的用法！
+                        </p>
+                    </div>
+                    <div class="mt-6 flex items-center justify-between text-sky-600 font-black">
+                        <span>翻開魔法書</span>
+                        <span class="text-xl group-hover:translate-x-1 transition-transform">➔</span>
+                    </div>
+                </button>
+
+                <!-- 模式二：標點大冒險 -->
+                <button onclick="switchScreen('adventure-menu')"
+                    class="btn-3d bg-white rounded-3xl p-6 border-4 border-emerald-400 text-left flex flex-col justify-between group hover:bg-emerald-50">
+                    <div>
+                        <div class="w-16 h-16 rounded-2xl bg-emerald-100 text-emerald-600 flex items-center justify-center text-4xl mb-4 group-hover:scale-110 transition-transform">
+                            🗺️
+                        </div>
+                        <span class="inline-block bg-emerald-100 text-emerald-700 text-xs font-black px-3 py-1 rounded-full mb-2">
+                            第二步：闖關修煉
+                        </span>
+                        <h3 class="text-2xl font-black text-slate-800 mb-2">標點大冒險</h3>
+                        <p class="text-slate-600 text-sm sm:text-base leading-relaxed">
+                            初級、中級、高級三大關卡！包含「填空選標點」與「標點小醫生」診斷挑戰。
+                        </p>
+                    </div>
+                    <div class="mt-6 flex items-center justify-between text-emerald-600 font-black">
+                        <span>出發去闖關</span>
+                        <span class="text-xl group-hover:translate-x-1 transition-transform">➔</span>
+                    </div>
+                </button>
+
+                <!-- 模式三：挑戰計時賽 -->
+                <button onclick="startBlitzGame()"
+                    class="btn-3d bg-white rounded-3xl p-6 border-4 border-amber-400 text-left flex flex-col justify-between group hover:bg-amber-50">
+                    <div>
+                        <div class="w-16 h-16 rounded-2xl bg-amber-100 text-amber-600 flex items-center justify-center text-4xl mb-4 group-hover:scale-110 transition-transform">
+                            ⏱️
+                        </div>
+                        <span class="inline-block bg-amber-100 text-amber-700 text-xs font-black px-3 py-1 rounded-full mb-2">
+                            第三步：極速考驗
+                        </span>
+                        <h3 class="text-2xl font-black text-slate-800 mb-2">60秒挑戰賽</h3>
+                        <p class="text-slate-600 text-sm sm:text-base leading-relaxed">
+                            限時 60 秒快問快答！累積連擊最高分，贏取「標點小博士」榮譽徽章！
+                        </p>
+                    </div>
+                    <div class="mt-6 flex items-center justify-between text-amber-600 font-black">
+                        <span>立即開始計時</span>
+                        <span class="text-xl group-hover:translate-x-1 transition-transform">➔</span>
+                    </div>
+                </button>
+            </div>
+        </section>
+
+        <!-- ==================== 2. 標點小百科 (學習區) ==================== -->
+        <section id="screen-wiki" class="hidden animate-pop">
+            <div class="bg-white rounded-3xl p-5 sm:p-8 border-4 border-sky-300 shadow-lg">
+                <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-4 border-b-2 border-slate-100 pb-4 mb-6">
+                    <div>
+                        <h2 class="text-2xl sm:text-3xl font-black text-sky-600 flex items-center gap-2">
+                            <span>📖</span> 標點小百科
+                        </h2>
+                        <p class="text-slate-500 text-sm sm:text-base mt-1">點一點下方的標點符號按鈕，看看它們的魔法口訣吧！</p>
+                    </div>
+                    <button onclick="switchScreen('adventure-menu')" class="btn-3d bg-emerald-500 text-white font-bold px-4 py-2 rounded-2xl text-sm self-start sm:self-auto">
+                        學會了！去闖關 ➔
+                    </button>
+                </div>
+
+                <!-- 10個標點符號選擇列 -->
+                <div id="wiki-tabs" class="grid grid-cols-5 sm:grid-cols-10 gap-2 sm:gap-2.5 mb-6">
+                    <!-- 由 JS 動態生成按鈕 -->
+                </div>
+
+                <!-- 標點詳細卡片展示區 -->
+                <div id="wiki-detail-card" class="bg-gradient-to-br from-sky-50 to-indigo-50 rounded-3xl p-6 sm:p-8 border-2 border-sky-200 transition-all">
+                    <!-- 由 JS 動態渲染內容 -->
+                </div>
+            </div>
+        </section>
+
+        <!-- ==================== 3. 標點大冒險 - 難度選擇 ==================== -->
+        <section id="screen-adventure-menu" class="hidden animate-pop">
+            <div class="text-center mb-8">
+                <span class="bg-emerald-100 text-emerald-700 font-black px-4 py-1.5 rounded-full text-sm">🗺️ 選擇你的冒險地圖</span>
+                <h2 class="text-3xl sm:text-4xl font-black text-slate-800 mt-3">你想挑戰哪一個等級？</h2>
+                <p class="text-slate-600 mt-2">每個關卡共有 8 題，包含「填空選標點」與「標點小醫生」兩種玩法！</p>
+            </div>
+
+            <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
+                <!-- 初級 -->
+                <div class="bg-white rounded-3xl p-6 border-4 border-lime-400 shadow-lg flex flex-col justify-between">
+                    <div>
+                        <div class="flex items-center justify-between mb-3">
+                            <span class="bg-lime-100 text-lime-700 font-black px-3 py-1 rounded-full text-sm">初級島嶼</span>
+                            <span id="stars-easy" class="text-xl">☆☆☆</span>
+                        </div>
+                        <h3 class="text-2xl font-black text-slate-800 mb-2">🌱 基礎常用小村莊</h3>
+                        <p class="text-slate-600 text-sm mb-4">練習最常見的五位好朋友，掌握句子的停頓與語氣。</p>
+                        <div class="bg-lime-50 rounded-2xl p-3 mb-6 border border-lime-200">
+                            <p class="text-xs font-bold text-lime-800 mb-1">包含標點：</p>
+                            <div class="flex gap-2 text-2xl font-black text-lime-700">
+                                <span class="bg-white px-2.5 py-1 rounded-xl shadow-sm">。</span>
+                                <span class="bg-white px-2.5 py-1 rounded-xl shadow-sm">，</span>
+                                <span class="bg-white px-2.5 py-1 rounded-xl shadow-sm">、</span>
+                                <span class="bg-white px-2.5 py-1 rounded-xl shadow-sm">？</span>
+                                <span class="bg-white px-2.5 py-1 rounded-xl shadow-sm">！</span>
+                            </div>
+                        </div>
+                    </div>
+                    <button onclick="startAdventure('easy')" class="btn-3d w-full bg-lime-500 hover:bg-lime-600 text-white font-black py-3.5 rounded-2xl text-lg">
+                        開始初級冒險 🚀
+                    </button>
+                </div>
+
+                <!-- 中級 -->
+                <div class="bg-white rounded-3xl p-6 border-4 border-sky-400 shadow-lg flex flex-col justify-between">
+                    <div>
+                        <div class="flex items-center justify-between mb-3">
+                            <span class="bg-sky-100 text-sky-700 font-black px-3 py-1 rounded-full text-sm">中級森林</span>
+                            <span id="stars-medium" class="text-xl">☆☆☆</span>
+                        </div>
+                        <h3 class="text-2xl font-black text-slate-800 mb-2">💬 對話與列舉森林</h3>
+                        <p class="text-slate-600 text-sm mb-4">學會人物說話時的「冒號與引號」，還有聲音拉長的省略號！</p>
+                        <div class="bg-sky-50 rounded-2xl p-3 mb-6 border border-sky-200">
+                            <p class="text-xs font-bold text-sky-800 mb-1">新增標點：</p>
+                            <div class="flex gap-2 text-2xl font-black text-sky-700">
+                                <span class="bg-white px-2.5 py-1 rounded-xl shadow-sm">：</span>
+                                <span class="bg-white px-2.5 py-1 rounded-xl shadow-sm">「」</span>
+                                <span class="bg-white px-2.5 py-1 rounded-xl shadow-sm">……</span>
+                            </div>
+                        </div>
+                    </div>
+                    <button onclick="startAdventure('medium')" class="btn-3d w-full bg-sky-500 hover:bg-sky-600 text-white font-black py-3.5 rounded-2xl text-lg">
+                        開始中級冒險 🧭
+                    </button>
+                </div>
+
+                <!-- 高級 -->
+                <div class="bg-white rounded-3xl p-6 border-4 border-purple-400 shadow-lg flex flex-col justify-between">
+                    <div>
+                        <div class="flex items-center justify-between mb-3">
+                            <span class="bg-purple-100 text-purple-700 font-black px-3 py-1 rounded-full text-sm">高級城堡</span>
+                            <span id="stars-hard" class="text-xl">☆☆☆</span>
+                        </div>
+                        <h3 class="text-2xl font-black text-slate-800 mb-2">🏰 綜合應用大城堡</h3>
+                        <p class="text-slate-600 text-sm mb-4">挑戰書名號、破折號，還有最容易混淆的標點符號辨析！</p>
+                        <div class="bg-purple-50 rounded-2xl p-3 mb-6 border border-purple-200">
+                            <p class="text-xs font-bold text-purple-800 mb-1">進階挑戰：</p>
+                            <div class="flex gap-2 text-2xl font-black text-purple-700">
+                                <span class="bg-white px-2.5 py-1 rounded-xl shadow-sm">《》</span>
+                                <span class="bg-white px-2.5 py-1 rounded-xl shadow-sm">——</span>
+                                <span class="bg-white px-2.5 py-1 rounded-xl shadow-sm text-base flex items-center">綜合辨析</span>
+                            </div>
+                        </div>
+                    </div>
+                    <button onclick="startAdventure('hard')" class="btn-3d w-full bg-purple-500 hover:bg-purple-600 text-white font-black py-3.5 rounded-2xl text-lg">
+                        挑戰高級城堡 👑
+                    </button>
+                </div>
+            </div>
+        </section>
+
+        <!-- ==================== 4. 遊戲進行畫面 (冒險模式 & 計時賽共用) ==================== -->
+        <section id="screen-game" class="hidden animate-pop">
+            <!-- 頂部狀態欄：進度/時間、愛心/分數、連擊 Combo -->
+            <div class="bg-white rounded-3xl p-4 border-4 border-amber-200 shadow-md mb-5 flex flex-wrap items-center justify-between gap-3">
+                <!-- 左側：關卡進度 或 倒數計時器 -->
+                <div id="game-status-left" class="flex items-center gap-3">
+                    <!-- 動態填入 -->
+                </div>
+
+                <!-- 中間：連擊提示 -->
+                <div id="combo-badge" class="hidden px-4 py-1 rounded-full bg-gradient-to-r from-orange-500 to-rose-500 text-white font-black text-sm sm:text-base shadow animate-bounce">
+                    🔥 <span id="combo-count">2</span> 連擊！
+                </div>
+
+                <!-- 右側：愛心生命值 或 得分 -->
+                <div id="game-status-right" class="flex items-center gap-3">
+                    <!-- 動態填入 -->
+                </div>
+            </div>
+
+            <!-- 題目卡片區 -->
+            <div id="question-card" class="bg-white rounded-3xl p-6 sm:p-8 border-4 border-slate-200 shadow-xl relative">
+                <!-- 題型標籤 -->
+                <div class="flex items-center justify-between mb-4">
+                    <span id="question-type-badge" class="px-4 py-1.5 rounded-full text-sm font-black bg-blue-100 text-blue-700">
+                        ✏️ 填空選標點
+                    </span>
+                    <span id="question-hint-text" class="text-xs sm:text-sm text-slate-500 font-bold">
+                        點擊下方標點符號填入空缺處
+                    </span>
+                </div>
+
+                <!-- 句子展示區 (字體特大清晰) -->
+                <div id="sentence-container" class="my-6 p-5 sm:p-7 bg-amber-50/70 rounded-2xl border-2 border-amber-200 text-2xl sm:text-3xl md:text-4xl font-bold text-slate-800 leading-relaxed sm:leading-loose tracking-wide text-center sm:text-left">
+                    <!-- 動態生成帶空缺或可點擊標點的句子 -->
+                </div>
+
+                <!-- 標點符號按鈕選項盤 -->
+                <div class="mt-6">
+                    <p id="options-prompt" class="text-center text-sm font-bold text-slate-500 mb-3">請選擇正確的標點符號：</p>
+                    <div id="options-container" class="flex flex-wrap justify-center gap-3 sm:gap-4">
+                        <!-- 動態生成標點選項按鈕 -->
+                    </div>
+                </div>
+
+                <!-- 操作按鈕區 (送出 / 清除) -->
+                <div id="action-buttons-row" class="mt-7 flex justify-center gap-4">
+                    <button id="clear-answer-btn" onclick="clearCurrentSelection()" class="btn-3d px-5 py-3 rounded-2xl bg-slate-200 hover:bg-slate-300 text-slate-700 font-bold text-base">
+                        🔄 重選
+                    </button>
+                    <button id="submit-answer-btn" onclick="submitAnswer()" class="btn-3d px-8 py-3 rounded-2xl bg-emerald-500 hover:bg-emerald-600 text-white font-black text-lg">
+                        確定送出 ✨
+                    </button>
+                </div>
+
+                <!-- 小老師即時解析回饋區 (答題後顯示) -->
+                <div id="feedback-box" class="hidden mt-6 rounded-2xl p-5 border-3 animate-pop">
+                    <div class="flex items-start gap-4">
+                        <div id="feedback-icon" class="text-4xl flex-shrink-0">🦉</div>
+                        <div class="flex-grow">
+                            <h4 id="feedback-title" class="text-xl font-black mb-1">答對啦！太棒了！</h4>
+                            <p id="feedback-explanation" class="text-slate-700 text-base leading-relaxed font-medium">
+                                <!-- 解析內容 -->
+                            </p>
+                        </div>
+                    </div>
+                    <div class="mt-4 flex justify-end">
+                        <button id="next-question-btn" onclick="nextQuestion()" class="btn-3d px-6 py-2.5 rounded-xl bg-amber-500 hover:bg-amber-600 text-white font-black text-base">
+                            下一題 ➔
+                        </button>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- ==================== 5. 結算與榮譽徽章畫面 ==================== -->
+        <section id="screen-result" class="hidden animate-pop">
+            <div class="bg-white rounded-3xl p-6 sm:p-10 border-4 border-amber-300 shadow-2xl text-center max-w-2xl mx-auto">
+                <div id="result-badge-icon" class="text-7xl sm:text-8xl mb-4 animate-bounce">🏆</div>
+                <span id="result-subtitle" class="inline-block bg-amber-100 text-amber-800 font-black px-4 py-1 rounded-full text-sm mb-2">
+                    冒險完成！
+                </span>
+                <h2 id="result-title" class="text-3xl sm:text-4xl font-black text-slate-800 mb-3">
+                    恭喜獲得「標點小達人」稱號！
+                </h2>
+                <p id="result-message" class="text-slate-600 text-base sm:text-lg mb-6">
+                    你的語文能力越來越強了，繼續加油喔！
+                </p>
+
+                <!-- 成績數據卡 -->
+                <div class="grid grid-cols-3 gap-3 sm:gap-4 bg-slate-50 p-4 rounded-2xl border-2 border-slate-200 mb-6">
+                    <div>
+                        <p class="text-xs text-slate-500 font-bold">總得分</p>
+                        <p id="result-score" class="text-2xl sm:text-3xl font-black text-orange-500">0</p>
+                    </div>
+                    <div>
+                        <p class="text-xs text-slate-500 font-bold">答對題數</p>
+                        <p id="result-correct" class="text-2xl sm:text-3xl font-black text-emerald-600">0</p>
+                    </div>
+                    <div>
+                        <p class="text-xs text-slate-500 font-bold">最高連擊</p>
+                        <p id="result-max-combo" class="text-2xl sm:text-3xl font-black text-sky-600">0</p>
+                    </div>
+                </div>
+
+                <!-- 錯題回顧區 (若有答錯的題目才顯示) -->
+                <div id="mistake-review-section" class="hidden text-left mb-6">
+                    <h3 class="text-lg font-black text-rose-600 mb-3 flex items-center gap-2">
+                        <span>📝</span> 小老師錯題筆記（一起來複習吧！）
+                    </h3>
+                    <div id="mistake-list" class="space-y-3 max-h-64 overflow-y-auto pr-1">
+                        <!-- 動態生成錯題卡 -->
+                    </div>
+                </div>
+
+                <!-- 底部按鈕 -->
+                <div class="flex flex-wrap justify-center gap-4">
+                    <button onclick="switchScreen('home')" class="btn-3d px-6 py-3 rounded-2xl bg-slate-200 hover:bg-slate-300 text-slate-700 font-black">
+                        🏠 返回主選單
+                    </button>
+                    <button id="play-again-btn" onclick="retryLastMode()" class="btn-3d px-8 py-3 rounded-2xl bg-amber-500 hover:bg-amber-600 text-white font-black">
+                        🔄 再玩一次
+                    </button>
+                </div>
+            </div>
+        </section>
+
+    </main>
+
+    <!-- 頁尾 -->
+    <footer class="text-center py-4 text-slate-400 text-xs font-bold">
+        標點符號大冒險 ・ 專為小學生設計的繁體中文語文互動遊戲
+    </footer>
+
+    <!-- ==================== JavaScript 遊戲核心邏輯 ==================== -->
+    <script>
+        /* =================================================================
+           1. Web Audio API 音效合成器 (無需任何外部音訊檔案)
+           ================================================================= */
+        const SoundFX = {
+            ctx: null,
+            enabled: true,
+            init() {
+                if (!this.ctx) {
+                    const AudioContext = window.AudioContext || window.webkitAudioContext;
+                    if (AudioContext) this.ctx = new AudioContext();
+                }
+                if (this.ctx && this.ctx.state === 'suspended') {
+                    this.ctx.resume();
+                }
+            },
+            playTone(freq, type, duration, delay = 0, volume = 0.25) {
+                if (!this.enabled) return;
+                this.init();
+                if (!this.ctx) return;
+
+                const osc = this.ctx.createOscillator();
+                const gain = this.ctx.createGain();
+                osc.type = type;
+                osc.frequency.setValueAtTime(freq, this.ctx.currentTime + delay);
+
+                gain.gain.setValueAtTime(volume, this.ctx.currentTime + delay);
+                gain.gain.exponentialRampToValueAtTime(0.001, this.ctx.currentTime + delay + duration);
+
+                osc.connect(gain);
+                gain.connect(this.ctx.destination);
+
+                osc.start(this.ctx.currentTime + delay);
+                osc.stop(this.ctx.currentTime + delay + duration);
+            },
+            click() {
+                this.playTone(520, 'sine', 0.08, 0, 0.15);
+            },
+            correct() {
+                // 清脆雙音 Do - Mi - Sol
+                this.playTone(523.25, 'triangle', 0.15, 0, 0.25);
+                this.playTone(659.25, 'triangle', 0.15, 0.08, 0.25);
+                this.playTone(783.99, 'triangle', 0.25, 0.16, 0.3);
+            },
+            wrong() {
+                // 溫柔低音提示
+                this.playTone(300, 'sawtooth', 0.18, 0, 0.15);
+                this.playTone(240, 'sawtooth', 0.25, 0.14, 0.15);
+            },
+            win() {
+                // 過關歡樂旋律
+                const notes = [523.25, 659.25, 783.99, 1046.50];
+                notes.forEach((n, i) => {
+                    this.playTone(n, 'triangle', 0.22, i * 0.12, 0.28);
+                });
+            }
+        };
+
+        function toggleSound() {
+            SoundFX.enabled = !SoundFX.enabled;
+            const btn = document.getElementById('sound-toggle-btn');
+            btn.textContent = SoundFX.enabled ? '🔊' : '🔇';
+            if (SoundFX.enabled) SoundFX.click();
+        }
+
+        /* =================================================================
+           2. 標點小百科資料庫 (10種小學必學標點符號)
+           ================================================================= */
+        const WIKI_DATA = [
+            {
+                symbol: '。',
+                name: '句號',
+                nickname: '小圓圈警察',
+                rhyme: '一句話兒說完了，畫個小圈歇一歇。',
+                usage: '用在完整陳述一句話的結尾，表示語氣已經結束，要停頓久一點。',
+                example: '今天天氣真晴朗，我們一起去公園野餐。',
+                color: 'bg-emerald-100 text-emerald-700 border-emerald-300'
+            },
+            {
+                symbol: '，',
+                name: '逗號',
+                nickname: '小蝌蚪精靈',
+                rhyme: '句子中間要換氣，小蝌蚪兒來幫忙。',
+                usage: '用在句子中間的停頓，讓長句子讀起來更清楚、不會喘不過氣。',
+                example: '放學回到家，我先洗手，然後開始寫功課。',
+                color: 'bg-sky-100 text-sky-700 border-sky-300'
+            },
+            {
+                symbol: '、',
+                name: '頓號',
+                nickname: '小水滴寶寶',
+                rhyme: '並列詞語排排站，中間點個小水滴。',
+                usage: '用來分開句子中並列的同類詞語（例如水果名稱、文具名稱），停頓時間比逗號短。',
+                example: '書包裡有鉛筆、橡皮擦、尺子和筆記本。',
+                color: 'bg-teal-100 text-teal-700 border-teal-300'
+            },
+            {
+                symbol: '？',
+                name: '問號',
+                nickname: '小耳朵偵探',
+                rhyme: '心裡有事不明白，小耳朵兒豎起來。',
+                usage: '用在疑問句的末尾，表示發問、好奇或反問的語氣。',
+                example: '請問去圖書館應該往哪個方向走呢？',
+                color: 'bg-amber-100 text-amber-700 border-amber-300'
+            },
+            {
+                symbol: '！',
+                name: '感嘆號',
+                nickname: '小驚喜火箭',
+                rhyme: '高興驚訝或生氣，一根棍子點一點。',
+                usage: '用在表達強烈感情（開心、驚訝、害怕、命令或讚嘆）的句子末尾。',
+                example: '哇！這道彩虹的顏色真是太美了！',
+                color: 'bg-rose-100 text-rose-700 border-rose-300'
+            },
+            {
+                symbol: '：',
+                name: '冒號',
+                nickname: '雙胞胎小眼睛',
+                rhyme: '小小兩點上下排，提示下文快出來。',
+                usage: '常用在「說、問、喊」等動詞後面，提示接下來要說的話；也用於總結或舉例前。',
+                example: '媽媽微笑著對我說：「你真是一個乖孩子！」',
+                color: 'bg-indigo-100 text-indigo-700 border-indigo-300'
+            },
+            {
+                symbol: '「」',
+                name: '引號',
+                nickname: '說話小括弧',
+                rhyme: '人物說話要框起，前後引號不分離。',
+                usage: '把人物直接說出的話，或是特別強調的詞語框起來。記得有開頭「就一定要有結尾」！',
+                example: '老師提醒大家：「過馬路時一定要看紅綠燈。」',
+                color: 'bg-orange-100 text-orange-700 border-orange-300'
+            },
+            {
+                symbol: '《》',
+                name: '書名號',
+                nickname: '雙魚小書籤',
+                rhyme: '書名篇名和歌曲，雙魚書籤夾中間。',
+                usage: '專門用來標示書籍、文章、報紙、電影或歌曲的名稱。',
+                example: '我最喜歡閱讀《西遊記》和《小王子》這兩本書。',
+                color: 'bg-purple-100 text-purple-700 border-purple-300'
+            },
+            {
+                symbol: '……',
+                name: '省略號',
+                nickname: '六點小腳印',
+                rhyme: '話沒說完或列舉，六個小點排整齊。',
+                usage: '表示說話斷斷續續、聲音延長，或者列舉很多東西還沒有說完。注意在中文裡佔兩格、共六個點！',
+                example: '動物園裡有獅子、老虎、長頸鹿、大象……真是熱鬧極了！',
+                color: 'bg-cyan-100 text-cyan-700 border-cyan-300'
+            },
+            {
+                symbol: '——',
+                name: '破折號',
+                nickname: '長長小橋樑',
+                rhyme: '解釋說明或轉折，長長一橫兩格寬。',
+                usage: '用來解釋說明前面的詞語，或是表示語意突然轉變、聲音延長。在中文裡佔兩格寬度。',
+                example: '我國的國寶——大熊貓，最喜歡吃新鮮的竹子。',
+                color: 'bg-fuchsia-100 text-fuchsia-700 border-fuchsia-300'
+            }
+        ];
+
+        /* =================================================================
+           3. 題庫設計 (包含「填空選標點 fill」與「標點小醫生 doctor」)
+           ================================================================= */
+        const QUESTION_BANK = {
+            // 初級：。，？！、
+            easy: [
+                {
+                    type: 'fill',
+                    segments: ['太陽公公出來了', '小鳥在樹枝上快樂地唱歌', ''],
+                    answers: ['，', '。'],
+                    options: ['。', '，', '？', '！', '、'],
+                    explanation: '前半句還沒說完，用逗號（，）停頓換氣；整句話說完了，用句號（。）結尾。'
+                },
+                {
+                    type: 'fill',
+                    segments: ['你今天早上吃早餐了嗎', ''],
+                    answers: ['？'],
+                    options: ['。', '，', '？', '！'],
+                    explanation: '句子裡有「嗎」，是在向別人發問，所以句尾要用問號（？）。'
+                },
+                {
+                    type: 'fill',
+                    segments: ['文具盒裡有鉛筆', '橡皮擦', '尺子和卷筆刀。'],
+                    answers: ['、', '、'],
+                    options: ['，', '、', '。', '！'],
+                    explanation: '「鉛筆」、「橡皮擦」、「尺子」都是並列的文具名稱，中間要用頓號（、）分開！'
+                },
+                {
+                    type: 'fill',
+                    segments: ['太棒了', '我們班在運動會獲得了第一名', ''],
+                    answers: ['！', '！'],
+                    options: ['。', '，', '？', '！'],
+                    explanation: '「太棒了」和獲得第一名都表達非常開心、激動的心情，要用感嘆號（！）喔！'
+                },
+                {
+                    type: 'doctor',
+                    // tokens 裡標記 isPunct: true 表示可點擊檢查的標點
+                    tokens: [
+                        { text: '小貓咪最喜歡吃魚' },
+                        { text: '？', isPunct: true, isWrong: true },
+                        { text: '每天都要吃兩條' },
+                        { text: '。', isPunct: true, isWrong: false }
+                    ],
+                    correctReplacement: '，',
+                    options: ['，', '。', '！', '、'],
+                    explanation: '「小貓咪最喜歡吃魚」並不是在問問題，只是句子中間的停頓，應該把問號（？）改成逗號（，）。'
+                },
+                {
+                    type: 'doctor',
+                    tokens: [
+                        { text: '果園裡種了蘋果' },
+                        { text: '，', isPunct: true, isWrong: true },
+                        { text: '香蕉' },
+                        { text: '、', isPunct: true, isWrong: false },
+                        { text: '西瓜和草莓' },
+                        { text: '。', isPunct: true, isWrong: false }
+                    ],
+                    correctReplacement: '、',
+                    options: ['、', '。', '？', '！'],
+                    explanation: '「蘋果、香蕉、西瓜」是並列的同類水果名稱，應該統一使用頓號（、），所以第一個逗號要改成頓號（、）。'
+                },
+                {
+                    type: 'fill',
+                    segments: ['這隻可愛的小狗是誰養的呢', ''],
+                    answers: ['？'],
+                    options: ['。', '，', '？', '！'],
+                    explanation: '這是一句疑問句，問小狗的主人是誰，結尾要用問號（？）。'
+                },
+                {
+                    type: 'doctor',
+                    tokens: [
+                        { text: '下雨了' },
+                        { text: '，', isPunct: true, isWrong: false },
+                        { text: '大家快點跑回家避雨吧' },
+                        { text: '？', isPunct: true, isWrong: true }
+                    ],
+                    correctReplacement: '！',
+                    options: ['！', '。', '、', '，'],
+                    explanation: '「快點跑回家避雨吧」是催促與感嘆的語氣，不是發問，應該把問號（？）改成感嘆號（！）。'
+                }
+            ],
+
+            // 中級：：「」…… 及基礎綜合
+            medium: [
+                {
+                    type: 'fill',
+                    segments: ['老師走進教室，微笑著說', '', '同學們早安！', ''],
+                    answers: ['：', '「', '」'],
+                    options: ['：', '「', '」', '，', '。'],
+                    explanation: '在「說」的後面要用冒號（：）提示下文，並用上引號「和下引號」把老師說的話框起來！'
+                },
+                {
+                    type: 'fill',
+                    segments: ['天上的白雲千變萬化，有的像小綿羊，有的像大白兔，有的像棉花糖', ''],
+                    answers: ['……'],
+                    options: ['。', '……', '——', '！'],
+                    explanation: '白雲的形狀還有很多很多沒有說完，這裡要用省略號（……）表示列舉未完！'
+                },
+                {
+                    type: 'fill',
+                    segments: ['小明大聲喊道', '', '快來看呀，這裡有一隻大蝴蝶！', ''],
+                    answers: ['：', '「', '」'],
+                    options: ['：', '「', '」', '？', '、'],
+                    explanation: '「喊道」後面要用冒號（：），人物直接喊出的話要用引號「」框起來。'
+                },
+                {
+                    type: 'doctor',
+                    tokens: [
+                        { text: '媽媽問我' },
+                        { text: '，', isPunct: true, isWrong: true },
+                        { text: '「', isPunct: true, isWrong: false },
+                        { text: '你的功課寫完了嗎？' },
+                        { text: '」', isPunct: true, isWrong: false }
+                    ],
+                    correctReplacement: '：',
+                    options: ['：', '。', '、', '！'],
+                    explanation: '在「問我」後面直接引述媽媽說的話，應該使用冒號（：）而不是逗號（，）喔！'
+                },
+                {
+                    type: 'fill',
+                    segments: ['小妹妹委屈地哭著說', '「我', '我不是故意打破花瓶的', '」'],
+                    answers: ['：', '……', '。'],
+                    options: ['：', '……', '。', '、', '？'],
+                    explanation: '「說」後面用冒號（：）；「我……我」表示說話斷斷續續，用省略號（……）；句尾用句號（。）。'
+                },
+                {
+                    type: 'doctor',
+                    tokens: [
+                        { text: '超市裡的貨架上擺滿了餅乾、糖果、果汁、巧克力' },
+                        { text: '、', isPunct: true, isWrong: true },
+                        { text: '真是應有盡有' },
+                        { text: '！', isPunct: true, isWrong: false }
+                    ],
+                    correctReplacement: '……',
+                    options: ['……', '。', '？', '：'],
+                    explanation: '列舉了很多商品還沒說完，應該用省略號（……），而不是在最後加頓號（、）。'
+                },
+                {
+                    type: 'fill',
+                    segments: ['爸爸摸摸我的頭說', '', '失敗沒關係，再試一次就會成功。', ''],
+                    answers: ['：', '「', '」'],
+                    options: ['：', '「', '」', '《', '》'],
+                    explanation: '人物說的話要用冒號（：）加上引號「」，書名號《》是給書名用的喔！'
+                },
+                {
+                    type: 'doctor',
+                    tokens: [
+                        { text: '弟弟開心地拍手叫道' },
+                        { text: '：', isPunct: true, isWrong: false },
+                        { text: '「', isPunct: true, isWrong: false },
+                        { text: '爺爺買新玩具給我了' },
+                        { text: '？', isPunct: true, isWrong: true },
+                        { text: '」', isPunct: true, isWrong: false }
+                    ],
+                    correctReplacement: '！',
+                    options: ['！', '。', '、', '：'],
+                    explanation: '弟弟非常開心地叫道，這是興奮感嘆的語氣，應該用感嘆號（！）而不是問號（？）。'
+                }
+            ],
+
+            // 高級：《》—— 及易混淆辨析
+            hard: [
+                {
+                    type: 'fill',
+                    segments: ['寒假期間，我讀完了', '三國演義', '和', '安徒生童話', '。'],
+                    answers: ['《', '》', '《', '》'],
+                    options: ['《', '》', '「', '」', '——'],
+                    explanation: '《三國演義》和《安徒生童話》都是書籍的名稱，要用書名號《》標示出來！'
+                },
+                {
+                    type: 'fill',
+                    segments: ['每年農曆五月初五', '端午節，家家戶戶都會吃粽子和賽龍舟。'],
+                    answers: ['——'],
+                    options: ['——', '……', '：', '、'],
+                    explanation: '「端午節」是對前面「農曆五月初五」的解釋說明，要用破折號（——）連接！'
+                },
+                {
+                    type: 'doctor',
+                    tokens: [
+                        { text: '音樂課上，全班同學一起合唱了' },
+                        { text: '「', isPunct: true, isWrong: true },
+                        { text: '小星星' },
+                        { text: '」', isPunct: true, isWrong: false },
+                        { text: '這首兒歌' },
+                        { text: '。', isPunct: true, isWrong: false }
+                    ],
+                    correctReplacement: '《',
+                    options: ['《', '：', '、', '——'],
+                    explanation: '《小星星》是一首歌曲的名稱，歌曲、書籍和文章名稱都應該用書名號《》，而不是引號「」！'
+                },
+                {
+                    type: 'fill',
+                    segments: ['「這件事真是太奇怪了', '」偵探柯南皺著眉頭說，', '「我們一定要找出真相', '」'],
+                    answers: ['！', '——', '！'],
+                    options: ['！', '——', '。', '：', '？'],
+                    explanation: '注意看！說話人在中間時，「皺著眉頭說」後面不能用冒號，這裡用破折號（——）或逗號連接前後兩段話，感嘆語氣用（！）。'
+                },
+                {
+                    type: 'doctor',
+                    tokens: [
+                        { text: '書桌上放著三本書' },
+                        { text: '：', isPunct: true, isWrong: false },
+                        { text: '《十萬個為什麼》' },
+                        { text: '，', isPunct: true, isWrong: true },
+                        { text: '《伊索寓言》和《成語故事》' },
+                        { text: '。', isPunct: true, isWrong: false }
+                    ],
+                    correctReplacement: '、',
+                    options: ['、', '。', '！', '——'],
+                    explanation: '並列的書名之間（《十萬個為什麼》和《伊索寓言》之間），應該使用頓號（、）分開，讓結構更清晰！'
+                },
+                {
+                    type: 'fill',
+                    segments: ['火車進站了，汽笛發出', '嗚', '的一聲長鳴。'],
+                    answers: ['「', '——」'],
+                    options: ['「', '——」', '《', '》', '……'],
+                    explanation: '「嗚——」表示聲音的延長，需要用破折號（——）表示拉長的聲音，再用引號框起擬聲詞。'
+                },
+                {
+                    type: 'doctor',
+                    tokens: [
+                        { text: '我最敬佩的人' },
+                        { text: '……', isPunct: true, isWrong: true },
+                        { text: '我的班主任陳老師，總是耐心地教導我們' },
+                        { text: '。', isPunct: true, isWrong: false }
+                    ],
+                    correctReplacement: '——',
+                    options: ['——', '？', '！', '、'],
+                    explanation: '「我的班主任陳老師」是解釋說明前面「最敬佩的人」是誰，應該用破折號（——）而不是省略號（……）！'
+                },
+                {
+                    type: 'fill',
+                    segments: ['你今天想讀', '格林童話', '，還是想看漫畫書呢', ''],
+                    answers: ['《', '》', '？'],
+                    options: ['《', '》', '？', '！', '。'],
+                    explanation: '《格林童話》是書名，用書名號《》；整句是選擇問句，句尾要用問號（？）喔！'
+                }
+            ]
+        };
+
+        /* =================================================================
+           4. 遊戲狀態管理
+           ================================================================= */
+        const GameState = {
+            totalStars: 0,
+            levelStars: { easy: 0, medium: 0, hard: 0 },
+            mode: 'adventure', // 'adventure' | 'blitz'
+            difficulty: 'easy',
+            questions: [],
+            currentIndex: 0,
+            score: 0,
+            correctCount: 0,
+            combo: 0,
+            maxCombo: 0,
+            lives: 3,
+            mistakes: [],
+            // 答題暫存狀態
+            userFillAnswers: [],
+            selectedDoctorIndex: null,
+            selectedDoctorReplacement: null,
+            isAnswered: false,
+            // 計時賽專用
+            timer: 60,
+            timerInterval: null
+        };
+
+        /* =================================================================
+           5. 初始化與畫面切換
+           ================================================================= */
+        window.onload = function() {
+            initWiki();
+            updateStarsUI();
+        };
+
+        function switchScreen(screenName) {
+            SoundFX.click();
+            // 停止計時器（若正在計時賽中離開）
+            if (GameState.timerInterval) {
+                clearInterval(GameState.timerInterval);
+                GameState.timerInterval = null;
+            }
+
+            const screens = ['home', 'wiki', 'adventure-menu', 'game', 'result'];
+            screens.forEach(s => {
+                document.getElementById(`screen-${s}`).classList.add('hidden');
+            });
+            document.getElementById(`screen-${screenName}`).classList.remove('hidden');
+
+            // 控制頂部「主選單」按鈕顯示
+            const navHomeBtn = document.getElementById('nav-home-btn');
+            if (screenName === 'home') {
+                navHomeBtn.classList.add('hidden');
+            } else {
+                navHomeBtn.classList.remove('hidden');
+            }
+        }
+
+        function updateStarsUI() {
+            document.getElementById('total-stars-display').textContent = GameState.totalStars;
+            ['easy', 'medium', 'hard'].forEach(lvl => {
+                const count = GameState.levelStars[lvl];
+                const el = document.getElementById(`stars-${lvl}`);
+                if (el) {
+                    el.textContent = '⭐'.repeat(count) + '☆'.repeat(3 - count);
+                }
+            });
+        }
+
+        /* =================================================================
+           6. 標點小百科邏輯
+           ================================================================= */
+        function initWiki() {
+            const tabsContainer = document.getElementById('wiki-tabs');
+            tabsContainer.innerHTML = '';
+
+            WIKI_DATA.forEach((item, index) => {
+                const btn = document.createElement('button');
+                btn.className = `punct-btn py-2.5 px-1 rounded-2xl border-2 font-black text-xl sm:text-2xl flex flex-col items-center justify-center bg-white hover:bg-sky-50 border-slate-200 text-slate-800`;
+                btn.innerHTML = `
+                    <span>${item.symbol}</span>
+                    <span class="text-[11px] font-bold text-slate-500 mt-0.5">${item.name}</span>
+                `;
+                btn.onclick = () => {
+                    SoundFX.click();
+                    selectWikiItem(index);
+                };
+                tabsContainer.appendChild(btn);
+            });
+
+            selectWikiItem(0);
+        }
+
+        function selectWikiItem(index) {
+            const item = WIKI_DATA[index];
+            const tabs = document.getElementById('wiki-tabs').children;
+            for (let i = 0; i < tabs.length; i++) {
+                if (i === index) {
+                    tabs[i].classList.add('ring-4', 'ring-sky-300', 'bg-sky-100', 'border-sky-500');
+                } else {
+                    tabs[i].classList.remove('ring-4', 'ring-sky-300', 'bg-sky-100', 'border-sky-500');
+                }
+            }
+
+            // 把例句中的該標點符號高亮顯示
+            let highlightedExample = item.example;
+            const symbolsToHighlight = item.symbol.length === 2 && !['……', '——'].includes(item.symbol)
+                ? [item.symbol[0], item.symbol[1]]
+                : [item.symbol];
+
+            symbolsToHighlight.forEach(sym => {
+                highlightedExample = highlightedExample.split(sym).join(
+                    `<span class="inline-block bg-amber-300 text-slate-900 px-1.5 mx-0.5 rounded-lg font-black shadow-sm">${sym}</span>`
+                );
+            });
+
+            const detailCard = document.getElementById('wiki-detail-card');
+            detailCard.innerHTML = `
+                <div class="flex flex-col md:flex-row items-center gap-6 animate-pop">
+                    <!-- 超大標點符號圖卡 -->
+                    <div class="w-32 h-32 sm:w-40 sm:h-40 rounded-3xl ${item.color} border-4 flex flex-col items-center justify-center shadow-md flex-shrink-0">
+                        <span class="text-5xl sm:text-6xl font-black tracking-tighter">${item.symbol}</span>
+                        <span class="text-xs font-black mt-2 px-2.5 py-0.5 bg-white/80 rounded-full">${item.nickname}</span>
+                    </div>
+
+                    <!-- 文字解說 -->
+                    <div class="flex-grow space-y-4 text-center md:text-left">
+                        <div>
+                            <h3 class="text-2xl sm:text-3xl font-black text-slate-800">${item.name}</h3>
+                            <div class="mt-2 inline-block bg-amber-100 border-2 border-amber-300 text-amber-900 px-4 py-2 rounded-2xl font-black text-base sm:text-lg">
+                                🎵 記憶口訣：「${item.rhyme}」
+                            </div>
+                        </div>
+
+                        <p class="text-slate-700 text-base sm:text-lg leading-relaxed">
+                            <strong class="text-sky-700">用法小秘密：</strong>${item.usage}
+                        </p>
+
+                        <div class="bg-white p-4 rounded-2xl border-2 border-sky-200 shadow-sm">
+                            <p class="text-xs font-black text-sky-600 mb-1">💡 生活例句示範：</p>
+                            <p class="text-xl sm:text-2xl font-bold text-slate-800 leading-relaxed">${highlightedExample}</p>
+                        </div>
+                    </div>
+                </div>
+            `;
+        }
+
+        /* =================================================================
+           7. 遊戲流程控制 (冒險闖關 & 60秒挑戰賽)
+           ================================================================= */
+        function shuffleArray(arr) {
+            const copy = [...arr];
+            for (let i = copy.length - 1; i > 0; i--) {
+                const j = Math.floor(Math.random() * (i + 1));
+                [copy[i], copy[j]] = [copy[j], copy[i]];
+            }
+            return copy;
+        }
+
+        function startAdventure(difficulty) {
+            SoundFX.click();
+            GameState.mode = 'adventure';
+            GameState.difficulty = difficulty;
+            GameState.questions = shuffleArray(QUESTION_BANK[difficulty]);
+            GameState.currentIndex = 0;
+            GameState.score = 0;
+            GameState.correctCount = 0;
+            GameState.combo = 0;
+            GameState.maxCombo = 0;
+            GameState.lives = 3;
+            GameState.mistakes = [];
+
+            switchScreen('game');
+            renderGameHeader();
+            loadQuestion();
+        }
+
+        function startBlitzGame() {
+            SoundFX.click();
+            GameState.mode = 'blitz';
+            // 混合所有難度的題目並洗牌
+            const allQ = [
+                ...QUESTION_BANK.easy,
+                ...QUESTION_BANK.medium,
+                ...QUESTION_BANK.hard
+            ];
+            GameState.questions = shuffleArray(allQ);
+            GameState.currentIndex = 0;
+            GameState.score = 0;
+            GameState.correctCount = 0;
+            GameState.combo = 0;
+            GameState.maxCombo = 0;
+            GameState.mistakes = [];
+            GameState.timer = 60;
+
+            switchScreen('game');
+            renderGameHeader();
+            loadQuestion();
+
+            // 啟動 60 秒倒數
+            GameState.timerInterval = setInterval(() => {
+                GameState.timer--;
+                renderGameHeader();
+                if (GameState.timer <= 0) {
+                    clearInterval(GameState.timerInterval);
+                    GameState.timerInterval = null;
+                    finishGame();
+                }
+            }, 1000);
+        }
+
+        function retryLastMode() {
+            if (GameState.mode === 'adventure') {
+                startAdventure(GameState.difficulty);
+            } else {
+                startBlitzGame();
+            }
+        }
+
+        function renderGameHeader() {
+            const leftEl = document.getElementById('game-status-left');
+            const rightEl = document.getElementById('game-status-right');
+            const comboBadge = document.getElementById('combo-badge');
+
+            if (GameState.combo >= 2) {
+                comboBadge.classList.remove('hidden');
+                document.getElementById('combo-count').textContent = GameState.combo;
+            } else {
+                comboBadge.classList.add('hidden');
+            }
+
+            if (GameState.mode === 'adventure') {
+                const total = GameState.questions.length;
+                const current = Math.min(GameState.currentIndex + 1, total);
+                leftEl.innerHTML = `
+                    <span class="bg-emerald-100 text-emerald-800 font-black px-3 py-1 rounded-xl text-sm">
+                        第 ${current} / ${total} 題
+                    </span>
+                    <div class="w-24 sm:w-36 h-3 bg-slate-200 rounded-full overflow-hidden hidden sm:block">
+                        <div class="h-full bg-emerald-500 transition-all duration-300" style="width: ${(current / total) * 100}%"></div>
+                    </div>
+                `;
+                rightEl.innerHTML = `
+                    <div class="text-lg sm:text-xl tracking-widest" title="剩餘愛心">
+                        ${'❤️'.repeat(GameState.lives)}${'🤍'.repeat(3 - GameState.lives)}
+                    </div>
+                    <span class="bg-amber-100 text-amber-800 font-black px-3 py-1 rounded-xl text-sm">
+                        ${GameState.score} 分
+                    </span>
+                `;
+            } else {
+                // 計時賽模式
+                const isUrgent = GameState.timer <= 10;
+                leftEl.innerHTML = `
+                    <span class="px-4 py-1.5 rounded-xl font-black text-base sm:text-lg ${isUrgent ? 'bg-rose-500 text-white animate-pulse' : 'bg-amber-100 text-amber-800'}">
+                        ⏱️ 剩餘 ${GameState.timer} 秒
+                    </span>
+                `;
+                rightEl.innerHTML = `
+                    <span class="bg-emerald-100 text-emerald-800 font-black px-3 py-1 rounded-xl text-sm">
+                        答對 ${GameState.correctCount} 題
+                    </span>
+                    <span class="bg-sky-100 text-sky-800 font-black px-3 py-1 rounded-xl text-sm">
+                        ${GameState.score} 分
+                    </span>
+                `;
+            }
+        }
+
+        /* =================================================================
+           8. 渲染題目與互動答題
+           ================================================================= */
+        function loadQuestion() {
+            // 若題庫用完（例如計時賽答超過 24 題），重新洗牌循環
+            if (GameState.currentIndex >= GameState.questions.length) {
+                if (GameState.mode === 'adventure') {
+                    finishGame();
+                    return;
+                } else {
+                    GameState.questions = shuffleArray(GameState.questions);
+                    GameState.currentIndex = 0;
+                }
+            }
+
+            const q = GameState.questions[GameState.currentIndex];
+            GameState.isAnswered = false;
+            GameState.userFillAnswers = new Array(q.answers ? q.answers.length : 0).fill(null);
+            GameState.selectedDoctorIndex = null;
+            GameState.selectedDoctorReplacement = null;
+
+            // 重置介面狀態
+            document.getElementById('feedback-box').classList.add('hidden');
+            document.getElementById('action-buttons-row').classList.remove('hidden');
+            document.getElementById('question-card').classList.remove('animate-shake');
+            renderGameHeader();
+
+            const typeBadge = document.getElementById('question-type-badge');
+            const hintText = document.getElementById('question-hint-text');
+            const sentenceContainer = document.getElementById('sentence-container');
+            const optionsContainer = document.getElementById('options-container');
+            const optionsPrompt = document.getElementById('options-prompt');
+
+            if (q.type === 'fill') {
+                typeBadge.className = 'px-4 py-1.5 rounded-full text-sm font-black bg-blue-100 text-blue-700';
+                typeBadge.textContent = '✏️ 填空選標點';
+                hintText.textContent = `需要填入 ${q.answers.length} 個標點符號（點擊空缺可清除）`;
+                optionsPrompt.textContent = '請依序點擊正確的標點符號填入空缺：';
+
+                renderFillSentence(q);
+            } else {
+                typeBadge.className = 'px-4 py-1.5 rounded-full text-sm font-black bg-rose-100 text-rose-700';
+                typeBadge.textContent = '🩺 標點小醫生';
+                hintText.textContent = '第一步：點擊句子中「生病用錯」的標點符號';
+                optionsPrompt.textContent = '第二步：選擇正確的標點符號來醫治它：';
+
+                renderDoctorSentence(q);
+            }
+
+            // 渲染選項按鈕
+            optionsContainer.innerHTML = '';
+            q.options.forEach(opt => {
+                const btn = document.createElement('button');
+                btn.className = 'punct-btn min-w-[3.8rem] sm:min-w-[4.5rem] h-14 sm:h-16 px-4 rounded-2xl bg-white border-3 border-slate-300 text-2xl sm:text-3xl font-black text-slate-800 hover:border-amber-400 hover:bg-amber-50';
+                btn.textContent = opt;
+                btn.onclick = () => handleOptionClick(opt);
+                optionsContainer.appendChild(btn);
+            });
+        }
+
+        // 渲染「填空題」句子
+        function renderFillSentence(q) {
+            const container = document.getElementById('sentence-container');
+            let html = '';
+            q.segments.forEach((seg, idx) => {
+                html += `<span>${seg}</span>`;
+                if (idx < q.answers.length) {
+                    const val = GameState.userFillAnswers[idx];
+                    const filledClass = val ? 'filled' : '';
+                    html += `<span onclick="clearSingleBlank(${idx})" class="blank-slot ${filledClass}" id="blank-${idx}">${val || '？'}</span>`;
+                }
+            });
+            container.innerHTML = html;
+        }
+
+        // 渲染「標點小醫生」句子
+        function renderDoctorSentence(q) {
+            const container = document.getElementById('sentence-container');
+            let html = '';
+            q.tokens.forEach((tok, idx) => {
+                if (tok.isPunct) {
+                    const isSelected = GameState.selectedDoctorIndex === idx;
+                    const displayPunct = (isSelected && GameState.selectedDoctorReplacement)
+                        ? GameState.selectedDoctorReplacement
+                        : tok.text;
+                    const selectedClass = isSelected ? 'selected' : '';
+                    html += `<span onclick="selectDoctorPunct(${idx})" class="doctor-punct ${selectedClass}">${displayPunct}</span>`;
+                } else {
+                    html += `<span>${tok.text}</span>`;
+                }
+            });
+            container.innerHTML = html;
+        }
+
+        // 點擊句子中的某個空格可單獨清除
+        function clearSingleBlank(idx) {
+            if (GameState.isAnswered) return;
+            SoundFX.click();
+            GameState.userFillAnswers[idx] = null;
+            renderFillSentence(GameState.questions[GameState.currentIndex]);
+        }
+
+        // 標點小醫生：點擊句子中疑似錯誤的標點
+        function selectDoctorPunct(tokenIdx) {
+            if (GameState.isAnswered) return;
+            SoundFX.click();
+            GameState.selectedDoctorIndex = tokenIdx;
+            GameState.selectedDoctorReplacement = null;
+            renderDoctorSentence(GameState.questions[GameState.currentIndex]);
+        }
+
+        // 點擊下方標點選項按鈕
+        function handleOptionClick(opt) {
+            if (GameState.isAnswered) return;
+            SoundFX.click();
+            const q = GameState.questions[GameState.currentIndex];
+
+            if (q.type === 'fill') {
+                // 找到第一個尚未填寫的空格
+                const emptyIdx = GameState.userFillAnswers.findIndex(v => v === null);
+                if (emptyIdx !== -1) {
+                    GameState.userFillAnswers[emptyIdx] = opt;
+                } else {
+                    // 若都填滿了，覆蓋最後一格
+                    GameState.userFillAnswers[GameState.userFillAnswers.length - 1] = opt;
+                }
+                renderFillSentence(q);
+            } else {
+                // 標點小醫生模式
+                if (GameState.selectedDoctorIndex === null) {
+                    // 貼心提示：如果小朋友還沒先點句子裡的標點，輕微搖晃提示
+                    const sentenceBox = document.getElementById('sentence-container');
+                    sentenceBox.classList.add('animate-shake');
+                    setTimeout(() => sentenceBox.classList.remove('animate-shake'), 400);
+                    return;
+                }
+                GameState.selectedDoctorReplacement = opt;
+                renderDoctorSentence(q);
+            }
+        }
+
+        // 重選按鈕
+        function clearCurrentSelection() {
+            if (GameState.isAnswered) return;
+            SoundFX.click();
+            const q = GameState.questions[GameState.currentIndex];
+            if (q.type === 'fill') {
+                GameState.userFillAnswers.fill(null);
+                renderFillSentence(q);
+            } else {
+                GameState.selectedDoctorIndex = null;
+                GameState.selectedDoctorReplacement = null;
+                renderDoctorSentence(q);
+            }
+        }
+
+        // 送出答案並檢查
+        function submitAnswer() {
+            if (GameState.isAnswered) return;
+            const q = GameState.questions[GameState.currentIndex];
+
+            let isComplete = false;
+            let isCorrect = false;
+
+            if (q.type === 'fill') {
+                isComplete = GameState.userFillAnswers.every(v => v !== null);
+                if (!isComplete) {
+                    const card = document.getElementById('question-card');
+                    card.classList.add('animate-shake');
+                    setTimeout(() => card.classList.remove('animate-shake'), 400);
+                    return;
+                }
+                isCorrect = GameState.userFillAnswers.every((val, i) => val === q.answers[i]);
+            } else {
+                isComplete = (GameState.selectedDoctorIndex !== null && GameState.selectedDoctorReplacement !== null);
+                if (!isComplete) {
+                    const card = document.getElementById('question-card');
+                    card.classList.add('animate-shake');
+                    setTimeout(() => card.classList.remove('animate-shake'), 400);
+                    return;
+                }
+                const targetToken = q.tokens[GameState.selectedDoctorIndex];
+                isCorrect = (targetToken.isWrong === true && GameState.selectedDoctorReplacement === q.correctReplacement);
+            }
+
+            GameState.isAnswered = true;
+            document.getElementById('action-buttons-row').classList.add('hidden');
+
+            // 更新填空框顏色
+            if (q.type === 'fill') {
+                q.answers.forEach((ans, idx) => {
+                    const slot = document.getElementById(`blank-${idx}`);
+                    if (slot) {
+                        slot.classList.remove('filled');
+                        if (GameState.userFillAnswers[idx] === ans) {
+                            slot.classList.add('correct');
+                        } else {
+                            slot.classList.add('wrong');
+                            slot.textContent = `${GameState.userFillAnswers[idx]} ➔ ${ans}`;
+                        }
+                    }
+                });
+            }
+
+            const feedbackBox = document.getElementById('feedback-box');
+            const feedbackIcon = document.getElementById('feedback-icon');
+            const feedbackTitle = document.getElementById('feedback-title');
+            const feedbackExplanation = document.getElementById('feedback-explanation');
+
+            if (isCorrect) {
+                SoundFX.correct();
+                GameState.combo++;
+                if (GameState.combo > GameState.maxCombo) GameState.maxCombo = GameState.combo;
+                GameState.correctCount++;
+                // 連擊加分計算
+                const bonus = (GameState.combo - 1) * 20;
+                GameState.score += (100 + bonus);
+
+                feedbackBox.className = 'mt-6 rounded-2xl p-5 border-4 border-emerald-400 bg-emerald-50 animate-pop';
+                feedbackIcon.textContent = '🎉';
+                feedbackTitle.className = 'text-xl font-black text-emerald-700 mb-1';
+                feedbackTitle.textContent = GameState.combo >= 2
+                    ? `太厲害了！${GameState.combo} 連擊加分 (+${100 + bonus}分)！`
+                    : '答對啦！你真是標點小天才！';
+                feedbackExplanation.textContent = q.explanation;
+            } else {
+                SoundFX.wrong();
+                GameState.combo = 0;
+                if (GameState.mode === 'adventure') {
+                    GameState.lives = Math.max(0, GameState.lives - 1);
+                }
+
+                // 記錄錯題供結算回顧
+                recordMistake(q);
+
+                feedbackBox.className = 'mt-6 rounded-2xl p-5 border-4 border-rose-300 bg-rose-50 animate-pop';
+                feedbackIcon.textContent = '🦉';
+                feedbackTitle.className = 'text-xl font-black text-rose-700 mb-1';
+                feedbackTitle.textContent = '差一點點！聽聽貓頭鷹小老師怎麼說：';
+                feedbackExplanation.textContent = q.explanation;
+            }
+
+            renderGameHeader();
+            feedbackBox.classList.remove('hidden');
+
+            // 計時賽模式若答對，1.2秒後自動跳下一題，讓節奏更明快！
+            if (GameState.mode === 'blitz' && isCorrect) {
+                document.getElementById('next-question-btn').textContent = '自動跳轉下一題...';
+                setTimeout(() => {
+                    if (GameState.mode === 'blitz' && GameState.timer > 0 && GameState.isAnswered) {
+                        nextQuestion();
+                    }
+                }, 1100);
+            } else {
+                document.getElementById('next-question-btn').textContent =
+                    (GameState.mode === 'adventure' && GameState.lives === 0) ? '查看冒險結果 ➔' : '下一題 ➔';
+            }
+        }
+
+        function recordMistake(q) {
+            let correctSentence = '';
+            if (q.type === 'fill') {
+                q.segments.forEach((seg, i) => {
+                    correctSentence += seg + (q.answers[i] ? `【${q.answers[i]}】` : '');
+                });
+            } else {
+                q.tokens.forEach(tok => {
+                    if (tok.isPunct && tok.isWrong) {
+                        correctSentence += `【${q.correctReplacement}】`;
+                    } else {
+                        correctSentence += tok.text;
+                    }
+                });
+            }
+            GameState.mistakes.push({
+                sentence: correctSentence,
+                explanation: q.explanation
+            });
+        }
+
+        function nextQuestion() {
+            SoundFX.click();
+            if (GameState.mode === 'adventure' && GameState.lives <= 0) {
+                finishGame();
+                return;
+            }
+            GameState.currentIndex++;
+            loadQuestion();
+        }
+
+        /* =================================================================
+           9. 遊戲結算與稱號頒發
+           ================================================================= */
+        function finishGame() {
+            if (GameState.timerInterval) {
+                clearInterval(GameState.timerInterval);
+                GameState.timerInterval = null;
+            }
+            SoundFX.win();
+            switchScreen('result');
+
+            document.getElementById('result-score').textContent = GameState.score;
+            document.getElementById('result-correct').textContent = `${GameState.correctCount} 題`;
+            document.getElementById('result-max-combo').textContent = `${GameState.maxCombo} 連擊`;
+
+            const badgeIcon = document.getElementById('result-badge-icon');
+            const subtitle = document.getElementById('result-subtitle');
+            const title = document.getElementById('result-title');
+            const msg = document.getElementById('result-message');
+
+            if (GameState.mode === 'adventure') {
+                const total = GameState.questions.length;
+                const ratio = GameState.correctCount / total;
+                let earnedStars = 1;
+                if (ratio >= 0.85 && GameState.lives > 0) earnedStars = 3;
+                else if (ratio >= 0.5) earnedStars = 2;
+
+                // 更新該難度最高星星數與總星星數
+                if (earnedStars > GameState.levelStars[GameState.difficulty]) {
+                    const diff = earnedStars - GameState.levelStars[GameState.difficulty];
+                    GameState.levelStars[GameState.difficulty] = earnedStars;
+                    GameState.totalStars += diff;
+                    updateStarsUI();
+                }
+
+                badgeIcon.textContent = '⭐'.repeat(earnedStars);
+                subtitle.textContent = `關卡結算：獲得 ${earnedStars} 顆星星！`;
+                title.textContent = earnedStars === 3
+                    ? '太神啦！完美通關！'
+                    : (earnedStars === 2 ? '表現很棒！繼續加油！' : '冒險完成！再練習一次會更強！');
+                msg.textContent = `你在這場冒險中答對了 ${GameState.correctCount} / ${total} 題，累積了 ${GameState.score} 分！`;
+            } else {
+                // 60秒挑戰賽稱號頒發
+                let rankTitle = '標點小萌新';
+                let rankIcon = '🌱';
+                let bonusStar = 1;
+
+                if (GameState.correctCount >= 10) {
+                    rankTitle = '標點小博士';
+                    rankIcon = '👑';
+                    bonusStar = 3;
+                } else if (GameState.correctCount >= 5) {
+                    rankTitle = '標點小達人';
+                    rankIcon = '🏅';
+                    bonusStar = 2;
+                }
+
+                GameState.totalStars += bonusStar;
+                updateStarsUI();
+
+                badgeIcon.textContent = rankIcon;
+                subtitle.textContent = `60秒計時賽結束・獎勵 +${bonusStar} ⭐`;
+                title.textContent = `榮獲「${rankTitle}」稱號！`;
+                msg.textContent = `在短短 60 秒內答對了 ${GameState.correctCount} 題，最高連擊 ${GameState.maxCombo} 次！`;
+            }
+
+            // 渲染錯題回顧
+            const reviewSec = document.getElementById('mistake-review-section');
+            const mistakeList = document.getElementById('mistake-list');
+            if (GameState.mistakes.length > 0) {
+                reviewSec.classList.remove('hidden');
+                mistakeList.innerHTML = GameState.mistakes.map((m, i) => `
+                    <div class="bg-rose-50/80 border-2 border-rose-200 rounded-2xl p-3.5">
+                        <p class="font-black text-slate-800 text-base mb-1">${i + 1}. 正確句子：${m.sentence}</p>
+                        <p class="text-xs sm:text-sm text-slate-600">💡 ${m.explanation}</p>
+                    </div>
+                `).join('');
+            } else {
+                reviewSec.classList.add('hidden');
+            }
+        }
+    </script>
+</body>
+</html>
